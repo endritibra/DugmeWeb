@@ -1,0 +1,236 @@
+{# *********************************************
+  * POWER Theme Section Text V1.3
+  ********************************************* #}
+
+{# MZ - General - make sure to use clean/consistent intendation/spacing in the code!! We use 4 spaces since a long time. Some parts of the code still use 2 spaces, but we will convert those later. #}
+{# MZ - Do this if the rest of the MZ tagged notes are done - Rename module fields, see https://take.ms/g1RAC #}
+
+{% import '../macros/_base.html' as macros_base %}
+{{ macros_base.init() }}
+
+{% import '../macros/_section.html' as macros_sec %}
+{% import '../macros/_background.html' as macros_bg %}
+
+{% import '../macros/_aos.html' as macros_aos %}
+{% import '../macros/_marquee.html' as macros_marquee %}
+
+
+{{ macros_sec.get_sec_title_styles() }}
+
+{% if module.anchor_link_id  %}<div class="pwr-anchor vanilla" id="{{ module.anchor_link_id }}"></div>{% endif %}
+
+{# setting marquee variable if the layout is seleceted from content editor to be marquee text #}
+{% set marquee = module.layout.section_variant=='marquee_text' %}
+
+{% set isTabs = module.layout.section_variant == 'tabs_vert_centered' || module.layout.section_variant == 'tabs_vert' || module.layout.section_variant == 'tabs_hor' %}
+
+
+<div class="{% if isTabs %}pwr-sec-text-tabs{% else %}pwr-sec-txt pwr-sec-txt--{{ module.layout.section_variant }}{% endif %} vanilla pwr-mh-group {% if module.layout.section_variant == 'tabs_vert_centered' && isTabs || module.layout.centered && !isTabs %}pwr--align-c{% endif %} {% if module.style.scheme == 'dark' %}pwr--dark{% else %}pwr--light{% endif %} {{ module.layout.padding_top }} {{ module.layout.padding_bottom }} {% if module.custom_class %}{{ module.custom_class }}{% endif %} lazyload"
+     {# Animation on Scroll #}
+     {{ macros_aos.get_aos(module.animation.section) }}         
+     {# Background - Style #} 
+     {{ macros_bg.get_style(module.style) }}
+>
+   {# Background  #}
+   {{ macros_bg.get_content(module.style) }}
+
+   {# Shape Divider  #}
+   {{ macros_sec.get_sec_shape_divider(module.style.shape_divider, "start") }}
+
+ {%- if isTabs %}
+ {# TEXT TABS #}
+ <div class="page-center">
+    <div class="pwr-tabs">
+        <div class="pwr-tabs__header {% if module.layout.section_variant == 'tabs_hor' %}pwr-tabs__header--hor{% endif %}">
+            <ul class="pwr-tabs__tab-wrapper {% if module.layout.section_variant == 'tabs_hor' %}pwr-tabs__tab-wrapper--hor{% endif %} {% if module.layout.section_variant == 'tabs_vert_centered' %}pwr-tabs__tab-wrapper--centered{% endif %}"
+            {# Animation on Scroll #}
+            {{ macros_aos.get_aos(module.animation.tabs) }}       
+         >
+            {% for tab in module.tab %}
+            <li class="pwr-tabs__tab {% if module.layout.section_variant == 'tabs_hor' %}pwr-tabs__tab--hor{% endif %} {% if loop.index == 1 %}pwr-tabs__tab--active{% endif %}" rel="tab{{ loop.index }}">{% if module.layout.isNumbered %}<span class="pwr-tabs__tab-prefix">{% if loop.index < 10%}0{% endif %}{{ loop.index }} </span>{% endif %}{{ tab.tab_title }}</li>
+            {% endfor %}
+            </ul>
+       <div class="pwr-form pwr-form--style-1 pwr-tabs__dropdown">
+         <select>
+         {% for tab in module.tab %}      
+           <option value="tab{{ loop.index }}">{% if module.layout.isNumbered %}{% if loop.index < 10%}0{% endif %}{{ loop.index }} {% endif %}{{ tab.tab_title }}</option>
+         {% endfor %}
+         </select>
+       </div>      
+     </div>
+     <div class="pwr-tabs__body {% if module.layout.section_variant == 'tabs_hor' %}pwr-tabs__body--hor{% endif %} pwr--clearfix"
+         {# Animation on Scroll #}
+         {{ macros_aos.get_aos(module.animation.text_left) }}       
+     >
+     {% for tab in module.tab %}
+       <div id="tab{{ loop.index }}" class="pwr-rich-text pwr-tabs__content {% if tab.layout.is2Cols %}pwr-tabs__content--2col{% endif %} pwr--clearfix">
+         {% if tab.content_title_sel_heading && tab.content_title %}
+         <div {% if module.layout.section_variant == 'tabs_vert_centered' %} class="pwr--align-c"{% endif %}>
+             <{{ tab.content_title_sel_heading }} class="pwr-tab__title {% if module.layout.section_variant != 'tabs_hor' %}{% if module.layout.intro_width == 'narrow' %}pwr-sec__title--narrow{% endif %}{% endif %} ">{{ tab.content_title }}</{{ tab.content_title_sel_heading }}>
+         </div>
+         {% endif %}
+         <div class="pwr-rich-text pwr-tab__content {% if tab.layout.is2Cols %}pwr-tab__content--left{% endif %}">{{ tab.content }}</div>
+         {% if tab.layout.is2Cols %}<div class="pwr-rich-text pwr-tab__content pwr-tab__content--right">{{ tab.content_right }}</div>{% endif %}
+       </div>
+     {% endfor %}
+     </div>
+   </div>
+ </div>
+   
+
+   {% elif marquee %}
+   {# MZ - load marquee js only if marquee layout selected #}
+   {# EI Fixed #}
+   {% if  module.layout.section_variant == "marquee_text" %}
+      {{ require_css( get_asset_url('/POWER THEME EI/css/components/_marquee.css')) }}
+      {{ require_js(get_asset_url('../../js/components/pwr-marquee.js'), { defer: true, fetchpriority: "low" } ) }}
+          
+        {% require_css %}
+        <style>
+        {% scope_css %}
+
+            .pwr-marquee__custom-text{
+                font-size:{{ module.marquee.cs_size_desktop }}px; }
+            .pwr-marquee-animation-speed{
+             animation-duration: {% if module.marquee.animation_.animation_type=="scroll_based" %} 0ms;
+             animation-direction:normal !important;
+             {% elif module.marquee.animation_.animation_type=="continuous" %} {{ module.marquee.animation_.continuous.animation_speed }}ms;  }
+
+            {% endif %}
+
+            .second-marquee--margin{
+               margin-top:{{ module.marquee.animation_.scroll_based.vertical_spacing }}px;
+              }
+              .pwr-marquee__custom-text{
+            font-size:{{ module.marquee.cs_size_desktop }}px;
+               font-weight: {{ module.marquee.font_weight }};
+               }
+
+             @media screen and (max-width:575px) {
+            .pwr-marquee__custom-text{
+               font-size: {{ module.marquee.cs_size_mobile }}px;
+             }
+            }
+
+			@media screen and (max-width:575px) {
+                .pwr-marquee__custom-text{
+                    font-size: {{ module.marquee.cs_size_mobile }}px !important;
+
+                }
+               .second-marquee--margin{
+                    margin-top: {{ module.marquee.animation_.scroll_based.vertical_sp_mobile_ }}px !important;}
+                }
+            @media only screen and (min-width:576px) and (max-width:991px) {
+            .pwr-marquee__custom-text{
+               font-size: {{ module.marquee.cs_size_tablet }}px !important;
+             }
+               .second-marquee--margin{
+                margin-top: {{ module.marquee.animation_.scroll_based.vertical_sp_tablet_ }}px !important;
+               }
+            }
+
+      {% end_scope_css %} 
+      </style>
+      {% end_require_css %}
+        
+   {% endif %}
+   
+      <div {% if module.marquee.animation_.animation_type=="scroll_based"   %} id="pwr-js-marquee" data-speed="{{ module.marquee.animation_.scroll_based.animation_speed }}" data-direction="{{ module.marquee.animation_.scroll_based.animation_options }}" {% endif %} class="pwr-sec-text__marquee {% if module.marquee.animation_.continuous.stop_on_hover %}  pwr-marquee--stop {% endif %}" >
+  
+          {# First div for maeeuqee #}
+          {{ macros_marquee.get_marquee_container(module.marquee) }}
+            
+{# MZ -  The duplicate div is not good practice. Code should never repeat itself like that. You can either use a HubL macro function to render several instances of that div and/or use JS to duplicate the div. #}
+{# EI - Went with creating macro and calling instances #}
+ 
+          {# Duplicate div for marquee #}
+          {{ macros_marquee.get_marquee_container(module.marquee) }}
+
+      </div>    
+
+    {# Scroll Based Duplicate + Vice Versa Direction Div #}
+    {% if module.marquee.animation_.scroll_based.duplicate_other_direction && module.marquee.animation_.animation_type=="scroll_based" %}
+     
+        <div {% if module.marquee.animation_.animation_type=="scroll_based"   %} id="pwr-js-marquee" data-speed="{{ module.marquee.animation_.scroll_based.animation_speed }}" data-direction="{% if module.marquee.animation_.scroll_based.animation_options=="rightl" %}leftr" {% elif module.marquee.animation_.scroll_based.animation_options=="leftr" %}rightl"{% endif %}" {% endif %} class="pwr-sec-text__marquee   second-marquee--margin {% if module.marquee.animation_.continuous.stop_on_hover %}  pwr-marquee--stop {% endif %}" >
+
+        {{ macros_marquee.get_marquee_duplicated_viceversa(module.marquee) }}
+        {{ macros_marquee.get_marquee_duplicated_viceversa(module.marquee) }}
+
+   
+        </div>
+    {% endif %}
+   
+   
+   
+ {% else %}
+ {# TEXT #}
+
+ <div class="page-center pwr--relative pwr--clearfix">
+   {% if (module.title && module.title_sel_heading) || module.intro_to_title %}  
+   <div class="pwr-sec-txt__intro-sec">
+     {% if module.intro_to_title %}
+     <span class="pwr-sec__title-intro {% if !module.layout.centered %}pwr-sec__title-intro--left{% else %}pwr--margin-centered{% endif %} {% if module.layout.intro_width == 'narrow' %}pwr-sec__title-intro--narrow{% endif %} pwr-sec-txt__title-intro" data-pwr-mh="intro"
+       {# Animation on Scroll #}
+       {{ macros_aos.get_aos(module.animation.intro_to_title) }}       
+       >
+       {{ module.intro_to_title }}
+     </span>
+     {% endif %} 
+     {% if module.title && module.title_sel_heading %}
+     <{{ module.title_sel_heading }} class="pwr-sec__title pwr-sec__title--{{ module.style.title_size }} {% if module.layout.intro_width == 'narrow' %}pwr-sec__title--narrow{% endif %} pwr-sec-txt__title"
+       {# Animation on Scroll #}
+       {{ macros_aos.get_aos(module.animation.title) }}       
+       >{{ module.title }}</{{ module.title_sel_heading }}>
+     {% endif %}
+   </div>
+   {% endif %}
+   {% if module.left|length > 0 || module.right|length > 0 %}
+   <div class="pwr-sec-txt__content pwr-sec-txt__content--{{ module.layout.vertical_alignment }} {% if module.layout.flip_order_for_mobile %}pwr-sec-txt__content--flipped pwr--flip-container{% endif %} pwr--clearfix">
+       {% if module.intro_to_title && module.layout.section_variant == 'right' %}
+       <span class="pwr-sec__title-intro pwr-sec-txt__title-intro pwr-sec-txt__title-intro--mobile-hidden" data-pwr-mh="intro"></span>
+       {% endif %}
+       {% if module.layout.section_variant != 'right' %}
+         <div class="pwr-rich-text pwr-sec-txt__left"
+           {# Animation on Scroll #}
+           {{ macros_aos.get_aos(module.animation.text_left) }}       
+           >
+           {{ module.left }}
+         </div>
+       {% endif %}
+       {% if module.layout.section_variant != '1col' %}
+         <div class="pwr-rich-text pwr-sec-txt__right"
+           {# Animation on Scroll #}
+           {{ macros_aos.get_aos(module.animation.text_right) }}       
+         >
+           {{ module.right }}
+         </div>
+       {% endif %}
+     </div>
+   {% endif %}
+ </div>
+ {% endif %}
+
+   {# Shape Divider  #}
+   {{ macros_sec.get_sec_shape_divider(module.style.shape_divider, "end") }}
+</div>
+
+
+
+{# MZ - use px values in CSS directly without HubL vars #}
+   {# EI - Fixed #}
+         {# Screen Sizes for the custom text size option 
+  mqMaxDesktop                        = '1199px'  
+  mqMinDesktop                        = '1200px' 
+ mqMaxDesktopSmaller                 =  '991px' 
+ mqMinDesktopSmaller                 =  '992px'
+set mqMaxTablet                         =  '767px' 
+set mqMinTablet                         =  '768px' 
+set mqMaxMobile                         =  '575px' 
+set mqMinMobile                         =  '576px' %   #}
+         
+{# MZ - load marquee CSS only if marquee layout selected and put the CSS part in the top area
+      - CSS code that does not have a HubL variable assinged and thus static should be loaded via a separate CSS file. 
+        The CSS file should be loaded conditionally as the JS file. 
+   EI - Fixed
+#}
+      

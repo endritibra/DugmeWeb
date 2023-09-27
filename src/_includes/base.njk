@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href=" https://cdn.jsdelivr.net/npm/atropos@1.0.2/atropos.min.css " rel="stylesheet">
+        <script src=" https://cdn.jsdelivr.net/npm/atropos@1.0.2/atropos.min.js "></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    {% include 'header.njk' %}
+    {{ content|safe }}
+    {% include 'footer.njk' %}
+    </body>
+
+
+<!-- capture the JS content as a Nunjucks variable -->
+{% set js %}
+  {% include "javas.js" %}
+{% endset %}
+<!-- feed it through our jsmin filter to minify -->
+<script>
+  {{ js | jsmin | safe }}
+</script>
+
+    </html>
+<!--
+  
+{% block script %}
+    <script>
+
+function myFunction() {
+  var x = document.querySelector(".navMobile");
+  let icona=document.querySelector(".icon")
+  if (x.style.display === "block") {
+    x.style.display = "none";
+    icona.classList.remove("iconic");
+    
+  } else {
+    x.style.display = "block";
+    icona.classList.add("iconic")
+  }
+} 
+
+
+const faqs=document.querySelectorAll(".faq");
+faqs.forEach((item)=>{
+  item.addEventListener("click",()=>{
+    item.classList.toggle("active");
+    console.log("oldu")
+  })
+})
+
+if(screen.width>700){
+const myAtropos = Atropos({
+  el: '.my-atropos',
+  activeOffset: 40,
+  shadowScale: 1.02,
+  rotateXMax:20,
+  stretchX:40,
+  onEnter() {
+    console.log('Enter');
+  },
+  onLeave() {
+    console.log('Leave');
+  },
+  onRotate(x, y) {
+    console.log('Rotate', x, y);
+  }
+});
+
+console.log("atropos")
+
+const mySecAtropos = Atropos({
+  el: '.my-secatropos',
+  activeOffset: 40,
+  shadowScale: 0,
+  onEnter() {
+    console.log('Enter');
+  },
+  onLeave() {
+    console.log('Leave');
+  },
+  onRotate(x, y) {
+    console.log('Rotate', x, y);
+  }
+});
+
+
+const mySecAtropos2 = Atropos({
+  el: '.my-secatropos2',
+  activeOffset: 40,
+  shadowScale: 0,
+  onEnter() {
+    console.log('Enter');
+  },
+  onLeave() {
+    console.log('Leave');
+  },
+  onRotate(x, y) {
+    console.log('Rotate', x, y);
+  }
+});
+
+const mySecAtropos3 = Atropos({
+  el: '.my-secatropos3',
+  activeOffset: 40,
+  shadowScale: 0,
+  onEnter() {
+    console.log('Enter');
+  },
+  onLeave() {
+    console.log('Leave');
+  },
+  onRotate(x, y) {
+    console.log('Rotate', x, y);
+  }
+});
+
+
+}
+	
+
+
+
+
+    </script>
+    {% endblock %}
+-->
